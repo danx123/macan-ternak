@@ -40,7 +40,8 @@ macan-ternak/
 ```
 
 ## 📸 Screenshot
-<img width="1365" height="767" alt="Screenshot 2025-12-09 180004" src="https://github.com/user-attachments/assets/c6c1f590-a03f-4fae-88eb-088e7fe5466e" />
+<img width="1365" height="767" alt="Screenshot 2025-12-09 201122" src="https://github.com/user-attachments/assets/a13f9320-18d4-474a-9828-db24336b0281" />
+
 
 
 ## 🚀 Installation
