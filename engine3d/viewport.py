@@ -25,11 +25,13 @@ class Viewport3D(QOpenGLWidget):
         self.last_mouse_pos = None
         self.setMouseTracking(True)
         
+        
         # Tiger animation
         self.tiger_scale = 1.0
         self.tiger_scale_direction = 0.01
         self.tiger_rotation = 0.0
-        self.tiger_color = [1.0, 0.6, 0.2]  # Orange tiger
+        # Change color to "Golden Tiger"
+        self.tiger_color = [1.0, 0.7, 0.1] 
         self.tiger_happy = False
         
         # Animation timer

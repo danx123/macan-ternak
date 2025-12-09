@@ -1,5 +1,5 @@
 """
-Left control panel with action buttons
+Left control panel with improved UI
 """
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, 
                                QPushButton, QGroupBox, QSpacerItem, 
@@ -8,9 +8,7 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QFont
 
 class ControlPanel(QWidget):
-    """Control panel with pet interaction buttons"""
     
-    # Signals
     feed_clicked = Signal()
     clean_clicked = Signal()
     sleep_clicked = Signal()
@@ -21,131 +19,82 @@ class ControlPanel(QWidget):
         self._setup_ui()
         
     def _setup_ui(self):
-        """Create control panel UI"""
         layout = QVBoxLayout(self)
         layout.setSpacing(15)
         
         # Title
-        title = QLabel("🐯 Controls")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title.setFont(title_font)
+        title = QLabel("🕹️ Actions")
+        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50;")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
         
         # Action buttons group
-        actions_group = QGroupBox("Pet Actions")
-        actions_layout = QVBoxLayout(actions_group)
-        actions_layout.setSpacing(10)
-        
-        # Feed button
-        self.feed_btn = QPushButton("🍖 Feed Tiger")
-        self.feed_btn.setMinimumHeight(50)
-        self.feed_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
+        actions_group = QGroupBox()
+        actions_group.setStyleSheet("""
+            QGroupBox {
                 border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:pressed {
-                background-color: #3d8b40;
             }
         """)
-        self.feed_btn.clicked.connect(self.feed_clicked.emit)
+        actions_layout = QVBoxLayout(actions_group)
+        actions_layout.setSpacing(12)
+        
+        # Helper to create styled buttons
+        def create_btn(text, color, hover_color, signal):
+            btn = QPushButton(text)
+            btn.setMinimumHeight(55)
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {color};
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-align: left;
+                    padding-left: 20px;
+                }}
+                QPushButton:hover {{
+                    background-color: {hover_color};
+                    margin-left: 2px;
+                }}
+                QPushButton:pressed {{
+                    background-color: {color};
+                    margin-top: 2px;
+                }}
+            """)
+            btn.clicked.connect(signal.emit)
+            return btn
+        
+        # Buttons with Material Colors
+        self.feed_btn = create_btn("🍖  Feed", "#4CAF50", "#45a049", self.feed_clicked)
         actions_layout.addWidget(self.feed_btn)
         
-        # Clean button
-        self.clean_btn = QPushButton("🛁 Clean Tiger")
-        self.clean_btn.setMinimumHeight(50)
-        self.clean_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #2196F3;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #0b7dda;
-            }
-            QPushButton:pressed {
-                background-color: #0a6bc2;
-            }
-        """)
-        self.clean_btn.clicked.connect(self.clean_clicked.emit)
+        self.clean_btn = create_btn("🛁  Clean", "#2196F3", "#1976D2", self.clean_clicked)
         actions_layout.addWidget(self.clean_btn)
         
-        # Sleep button
-        self.sleep_btn = QPushButton("😴 Let Sleep")
-        self.sleep_btn.setMinimumHeight(50)
-        self.sleep_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #9C27B0;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #8e24aa;
-            }
-            QPushButton:pressed {
-                background-color: #7b1fa2;
-            }
-        """)
-        self.sleep_btn.clicked.connect(self.sleep_clicked.emit)
+        self.sleep_btn = create_btn("😴  Sleep", "#9C27B0", "#7B1FA2", self.sleep_clicked)
         actions_layout.addWidget(self.sleep_btn)
         
-        # Play button
-        self.play_btn = QPushButton("🎾 Play")
-        self.play_btn.setMinimumHeight(50)
-        self.play_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #FF9800;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #f57c00;
-            }
-            QPushButton:pressed {
-                background-color: #e65100;
-            }
-        """)
-        self.play_btn.clicked.connect(self.play_clicked.emit)
+        self.play_btn = create_btn("🎾  Play", "#FF9800", "#F57C00", self.play_clicked)
         actions_layout.addWidget(self.play_btn)
         
         layout.addWidget(actions_group)
         
-        # Info section
-        info_group = QGroupBox("Instructions")
-        info_layout = QVBoxLayout(info_group)
-        
-        info_text = QLabel(
-            "• Feed when hungry\n"
-            "• Clean when dirty\n"
-            "• Sleep when tired\n"
-            "• Play to boost mood\n\n"
-            "Keep all stats high\n"
-            "to level up faster!"
+        # Info Box
+        info_box = QLabel(
+            "💡 <b>Tips:</b><br>"
+            "Keep your tiger happy to earn more coins! "
+            "Use coins in the shop."
         )
-        info_text.setWordWrap(True)
-        info_text.setStyleSheet("font-size: 12px; color: #666;")
-        info_layout.addWidget(info_text)
+        info_box.setWordWrap(True)
+        info_box.setStyleSheet("""
+            background-color: #ECEFF1;
+            border-radius: 8px;
+            padding: 10px;
+            color: #455A64;
+            font-size: 12px;
+        """)
+        layout.addWidget(info_box)
         
-        layout.addWidget(info_group)
-        
-        # Spacer
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))

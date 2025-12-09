@@ -1,0 +1,104 @@
+"""
+Shop UI Panel
+"""
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, 
+                               QListWidget, QListWidgetItem, QGroupBox, 
+                               QHBoxLayout, QMessageBox)
+from PySide6.QtCore import Signal, Qt, QSize
+from PySide6.QtGui import QFont, QColor, QBrush
+
+class ShopPanel(QWidget):
+    item_purchased = Signal(object)  # Emits ShopItem
+    
+    def __init__(self, shop):
+        super().__init__()
+        self.shop = shop
+        self._setup_ui()
+        
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+        
+        # Header
+        header = QLabel("🏪 Shop")
+        header.setStyleSheet("font-size: 16px; font-weight: bold; color: #333;")
+        header.setAlignment(Qt.AlignCenter)
+        layout.addWidget(header)
+        
+        # Coins Display
+        self.coins_container = QGroupBox()
+        self.coins_container.setStyleSheet("""
+            QGroupBox {
+                background-color: #FFF8E1;
+                border: 2px solid #FFC107;
+                border-radius: 8px;
+                margin-top: 10px;
+            }
+        """)
+        coins_layout = QHBoxLayout(self.coins_container)
+        
+        self.coins_label = QLabel("💰 0")
+        self.coins_label.setStyleSheet("font-size: 14px; font-weight: bold; color: #F57C00;")
+        self.coins_label.setAlignment(Qt.AlignCenter)
+        coins_layout.addWidget(self.coins_label)
+        layout.addWidget(self.coins_container)
+        
+        # Item List
+        self.item_list = QListWidget()
+        self.item_list.setStyleSheet("""
+            QListWidget {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: white;
+                outline: none;
+            }
+            QListWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+            QListWidget::item:selected {
+                background-color: #E3F2FD;
+                color: #1565C0;
+            }
+        """)
+        
+        for item in self.shop.items:
+            list_item = QListWidgetItem()
+            list_item.setText(f"{item.icon} {item.name}\n   {item.description}\n   💰 {item.price}")
+            list_item.setData(Qt.UserRole, item)
+            self.item_list.addItem(list_item)
+            
+        layout.addWidget(self.item_list)
+        
+        # Buy Button
+        self.buy_btn = QPushButton("Buy Selected")
+        self.buy_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #FF9800;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background-color: #F57C00;
+            }
+            QPushButton:pressed {
+                background-color: #E65100;
+            }
+        """)
+        self.buy_btn.clicked.connect(self._on_buy)
+        layout.addWidget(self.buy_btn)
+        
+    def _on_buy(self):
+        current_item = self.item_list.currentItem()
+        if current_item:
+            item = current_item.data(Qt.UserRole)
+            self.item_purchased.emit(item)
+        else:
+            QMessageBox.information(self, "Shop", "Please select an item first!")
+    
+    def update_coins(self, coins):
+        self.coins_label.setText(f"💰 {int(coins)}")
